@@ -30,11 +30,49 @@ export const metadata: Metadata = {
     "RF Engineering",
   ],
   authors: [{ name: "Kevin Kipkorir" }],
+  creator: "Kevin Kipkorir",
+  metadataBase: new URL("https://kevinkipkorir.dev"), // Update with your actual domain
   openGraph: {
     title: "Kevin Kipkorir | Telecommunications & AI Engineer",
     description:
       "Building intelligent systems at the intersection of 5G networks and AI",
     type: "website",
+    locale: "en_AU",
+    siteName: "Kevin Kipkorir Portfolio",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Kevin Kipkorir - Telecommunications & AI Engineer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kevin Kipkorir | Telecommunications & AI Engineer",
+    description:
+      "Building intelligent systems at the intersection of 5G networks and AI",
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

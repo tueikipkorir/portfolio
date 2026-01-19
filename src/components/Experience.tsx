@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import Image from "next/image";
 import SectionHeader from "./SectionHeader";
 import { experience } from "@/lib/data";
 
@@ -15,9 +16,9 @@ export default function Experience() {
     <section id="experience" className="section-container">
       <SectionHeader tag="// MY EXPERIENCE" title="Professional Journey" />
 
-      <div ref={ref} className="relative pl-8 md:pl-12">
+      <div ref={ref} className="relative pl-20 md:pl-24">
         {/* Timeline line */}
-        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent-cyan via-accent-purple to-accent-magenta" />
+        <div className="absolute left-[30px] md:left-[38px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent-cyan via-accent-purple to-accent-magenta" />
 
         {experience.map((exp, index) => (
           <motion.div
@@ -27,12 +28,30 @@ export default function Experience() {
             transition={{ duration: 0.6, delay: index * 0.15 }}
             className="relative pb-12 last:pb-0"
           >
-            {/* Timeline dot */}
-            <div className="absolute left-[-8px] md:left-[-12px] top-0 w-4 h-4 md:w-6 md:h-6 rounded-full bg-accent-cyan shadow-[0_0_20px_rgba(0,212,255,0.5)]">
-              <div className="absolute inset-1 rounded-full bg-primary" />
+            {/* Timeline logos */}
+            <div className="absolute left-[-80px] md:left-[-96px] top-0 flex flex-col gap-2">
+              {exp.logos && exp.logos.length > 0 ? (
+                exp.logos.map((logo, logoIndex) => (
+                  <div
+                    key={logoIndex}
+                    className="relative w-14 h-14 md:w-16 md:h-16 bg-white rounded-full overflow-hidden shadow-[0_0_20px_rgba(0,212,255,0.3)] border-2 border-accent-cyan/50"
+                  >
+                    <Image
+                      src={logo}
+                      alt="Company logo"
+                      fill
+                      className="object-contain p-2"
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-accent-cyan shadow-[0_0_20px_rgba(0,212,255,0.5)] flex items-center justify-center">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary" />
+                </div>
+              )}
             </div>
 
-            <div className="card p-6 md:p-8 ml-4 md:ml-8">
+            <div className="card p-6 md:p-8">
               <p className="font-mono text-sm text-accent-magenta mb-2">
                 {exp.date}
               </p>

@@ -32,3 +32,9 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Word temp files
+~$*
+
+# Assignment documents (private)
+docs/

@@ -1,34 +1,42 @@
 export const projects = [
   {
-    title: "Nokia 5G PPE Safety Detection",
+    title: "Nokia 5G PPE Safety Detection System",
     description:
-      "AI-powered safety monitoring system using YOLOv11 and Nokia's 360° cameras on autonomous Temi robots. Achieving 94% mAP50 accuracy for real-time PPE compliance detection via Nokia's RXRM platform.",
-    tags: ["YOLOv11", "Nokia RXRM", "5G", "Computer Vision"],
+      "AI-powered mobile safety monitoring using YOLOv11 computer vision on Nokia's 360° cameras mounted on autonomous Temi robots. Achieved 94% mAP50 accuracy with sub-250ms latency via Nokia's RXRM platform and 5G URLLC connectivity.",
+    tags: ["YOLOv11", "Nokia RXRM", "5G URLLC", "Computer Vision"],
     icon: "🦺",
     link: "#",
   },
   {
     title: "LTE-Based Water Level Sensing",
     description:
-      "Thesis research using 4G LTE signal characteristics for flood monitoring in Mid North Coast NSW. Strong statistical correlations achieved with 4-6cm accuracy using signal analysis techniques.",
+      "Thesis research leveraging 4G LTE signal characteristics (RSRP, RSRQ, SINR) for environmental sensing in NSW Mid North Coast. Achieved 4-6cm water level accuracy using signal propagation analysis for flood monitoring.",
     tags: ["4G LTE", "Signal Processing", "Environmental Sensing", "Python"],
     icon: "🌊",
     link: "#",
   },
   {
-    title: "CementOps ML Pipeline",
+    title: "3-Beam Pattern-Reconfigurable Antenna",
     description:
-      "Complete machine learning solution using Hugging Face Transformers for industrial process optimization. End-to-end MLOps pipeline with Docker containerization and production deployment.",
-    tags: ["Transformers", "MLOps", "Docker", "Kubernetes"],
-    icon: "🤖",
+      "Designed and simulated a beam-steering antenna at 4.98 GHz using ANSYS HFSS with electronically switchable parasitic directors. Achieved ±30° beam steering with 6.6 dBi peak gain and S₁₁ ≤ -15dB impedance matching.",
+    tags: ["HFSS", "Antenna Design", "RF Engineering", "Beam Steering"],
+    icon: "📶",
     link: "#",
   },
   {
-    title: "Reconfigurable Antenna Design",
+    title: "2x2 MIMO-OFDMA Simulator",
     description:
-      "RF engineering project designing reconfigurable dipole antennas with parasitic elements for beam steering applications. Simulation and analysis using HFSS software.",
-    tags: ["HFSS", "Antenna Design", "RF Engineering", "Beam Steering"],
-    icon: "📶",
+      "Built a complete MATLAB simulator for multi-user MIMO-OFDM systems over frequency-selective Rayleigh fading channels. Implemented QPSK modulation, subband allocation, and zero-forcing equalization with BER analysis.",
+    tags: ["MATLAB", "MIMO", "OFDMA", "Wireless Communications"],
+    icon: "📡",
+    link: "#",
+  },
+  {
+    title: "5G Homelab & ML Energy Optimization",
+    description:
+      "Complete 5G network simulation using Open5GS core, srsRAN gNB/UE with ZeroMQ virtual radios. Implementing machine learning pipelines for network energy optimization without licensed spectrum.",
+    tags: ["Open5GS", "srsRAN", "5G Core", "Machine Learning", "Work in Progress"],
+    icon: "🏠",
     link: "#",
   },
 ];
@@ -37,62 +45,68 @@ export const skills = [
   {
     category: "Telecommunications",
     items: [
-      "5G/4G LTE Networks",
-      "Network Slicing",
-      "RF Engineering",
-      "Antenna Design",
-      "Signal Processing",
-      "Fixed Wireless Access",
-      "Shannon Capacity Analysis",
+      "5G/4G LTE Networks & Architecture",
+      "MIMO-OFDM Systems",
+      "Network Slicing & QoS",
+      "Open5GS & srsRAN Simulation",
+      "Signal Processing & Analysis",
+      "Shannon Capacity & Link Budget",
+      "Fixed Wireless Access (FWA)",
+    ],
+  },
+  {
+    category: "RF & Antenna Engineering",
+    items: [
+      "ANSYS HFSS Simulation",
+      "Antenna Design & Optimization",
+      "Beam Steering & Phased Arrays",
+      "S-Parameter Analysis",
+      "Impedance Matching",
+      "Pattern Reconfiguration",
     ],
   },
   {
     category: "AI & Machine Learning",
     items: [
-      "Computer Vision (YOLO)",
-      "Hugging Face Transformers",
+      "Computer Vision (YOLOv8/v11)",
+      "Object Detection & Tracking",
       "TensorFlow / PyTorch",
-      "MLOps Pipelines",
+      "MLOps & Edge Deployment",
       "Prompt Engineering",
       "Model Evaluation",
-      "Data Analysis",
     ],
   },
   {
-    category: "Programming",
-    items: ["Python", "MATLAB", "SQL", "Bash/Shell", "C/C++", "JavaScript"],
-  },
-  {
-    category: "Tools & Platforms",
+    category: "Programming & Tools",
     items: [
-      "HFSS Simulation",
-      "Nokia RXRM Platform",
-      "Docker & Kubernetes",
+      "Python (NumPy, Pandas, OpenCV)",
+      "MATLAB & Simulink",
+      "SQL & Databases",
+      "Bash/Shell Scripting",
       "Git/GitHub",
-      "Linux Administration",
-      "AWS Cloud Services",
+      "Docker & Kubernetes",
     ],
   },
   {
-    category: "Research",
+    category: "Electronics & Hardware",
     items: [
-      "Academic Writing",
+      "CMOS Analog IC Design",
+      "Tanner EDA (S-Edit, L-Edit)",
+      "SPICE Circuit Simulation",
+      "MEMS & Sensor Systems",
+      "Embedded Systems",
+      "PCB Design Fundamentals",
+    ],
+  },
+  {
+    category: "Research & Professional",
+    items: [
+      "Academic Writing & Publication",
       "Statistical Analysis",
-      "Literature Review",
-      "Experimental Design",
-      "Data Visualization",
+      "Risk Assessment (ISO 31000)",
+      "FMECA Methodology",
       "Technical Documentation",
-    ],
-  },
-  {
-    category: "Professional",
-    items: [
       "Project Management",
-      "Technical Presentation",
-      "Cross-functional Collaboration",
-      "Agile Methodologies",
-      "Problem Solving",
-      "Continuous Learning",
     ],
   },
 ];
@@ -103,35 +117,39 @@ export const experience = [
     title: "5G Research Intern",
     company: "Nokia / UTS TechLab via Optik Consultancy",
     description:
-      "Developing AI-powered safety systems using Nokia's 5G infrastructure. Building computer vision solutions with YOLOv11 for PPE detection, integrating with Nokia RXRM platform and Temi autonomous robots.",
+      "Leading development of AI-powered safety systems using Nokia's 5G infrastructure. Building YOLOv11 computer vision for PPE detection with 94% accuracy, integrating with Nokia RXRM edge platform and Temi autonomous robots.",
+    logos: ["/Nokia.jpeg", "/Optik.jpeg"],
   },
   {
     date: "2023 - Present",
     title: "AI Evaluation Specialist",
     company: "Scale AI (Remote)",
     description:
-      "Working on model evaluation and prompt engineering projects. Contributing to AI quality assurance and training data development for large language models.",
+      "Contributing to AI model evaluation and prompt engineering for large language models. Developing evaluation rubrics and providing training data quality assurance.",
+    logos: ["/Scale.png", "/Outlier.jpeg"],
   },
   {
     date: "2019 - 2020",
-    title: "Telecommunications Intern",
+    title: "Network Operations Intern",
     company: "Safaricom PLC, Kenya",
     description:
-      "Gained hands-on experience with mobile network infrastructure and operations at East Africa's largest telecommunications company.",
+      "Hands-on experience with mobile network infrastructure at East Africa's largest telco. Supported network monitoring and performance optimization for 4G LTE networks.",
+    logos: ["/SAF-MAIN-LOGO.jpg"],
   },
   {
     date: "2018 - 2019",
-    title: "Engineering Intern",
-    company: "Kenya Power",
+    title: "IT & Telecommunications Intern",
+    company: "Kenya Power & Lighting Company",
     description:
-      "Worked on utility infrastructure projects, gaining experience in power systems and electrical engineering fundamentals.",
+      "Worked on utility telecommunications infrastructure supporting power grid operations. Gained experience in SCADA communications and fiber optic networks.",
+    logos: ["/kenyapower.png"],
   },
 ];
 
 export const socialLinks = {
   email: "tueikipkorirk@gmail.com",
   linkedin: "https://www.linkedin.com/in/kevin-kipkorir-a3b71298/",
-  github: "https://github.com/kevin-kipkorir",
+  github: "https://github.com/tueikipkorir",
   phone: "0414 037 255",
-  location: "Port Macquarie, NSW, Australia",
+  location: "Sydney, NSW, Australia",
 };
