@@ -56,7 +56,7 @@ export default function About() {
             </p>
             <p>
               My thesis research explores innovative applications of mobile
-              network signals for environmental sensing—specifically water level
+              network signals for environmental sensing; specifically water level
               monitoring using 4G LTE signals, achieving remarkable 4-6cm
               accuracy for flood monitoring applications.
             </p>

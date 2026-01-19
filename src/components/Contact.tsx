@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import SectionHeader from "./SectionHeader";
 import { socialLinks } from "@/lib/data";
-import { Mail, Linkedin, Github, MapPin, Send } from "lucide-react";
+import { Mail, Linkedin, Github, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
+
+const FORMSPREE_FORM_ID = "mzddrgya";
+
+type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -13,7 +17,8 @@ export default function Contact() {
     email: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -22,16 +27,51 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setStatus("submitting");
+    setErrorMessage("");
 
-    // TODO: Replace with your actual form handler (Formspree, Resend, etc.)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    alert(
-      "Thanks for your message! This is a demo - please update with your actual form handler."
-    );
+    // Basic client-side validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setStatus("error");
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
 
-    setFormData({ name: "", email: "", message: "" });
-    setIsSubmitting(false);
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || "Something went wrong");
+      }
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Failed to send message. Please try again."
+      );
+    }
   };
 
   const contactLinks = [
@@ -70,7 +110,7 @@ export default function Contact() {
           <p className="text-text-secondary text-lg mb-8">
             I&apos;m currently open to PhD opportunities, engineering roles, and
             collaborative research projects. Whether you want to discuss 5G
-            innovations, AI applications, or potential opportunities—I&apos;d love to
+            innovations, AI applications, or potential opportunities; I&apos;d love to
             hear from you.
           </p>
 
@@ -157,13 +197,35 @@ export default function Contact() {
             />
           </div>
 
+          {/* Status Messages */}
+          {status === "success" && (
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3 text-green-400">
+              <CheckCircle size={20} />
+              <span>Thank you! Your message has been sent successfully.</span>
+            </div>
+          )}
+
+          {status === "error" && errorMessage && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-400">
+              <AlertCircle size={20} />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={status === "submitting"}
             className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
-              "Sending..."
+            {status === "submitting" ? (
+              <>
+                <span className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
+                Sending...
+              </>
+            ) : status === "success" ? (
+              <>
+                Message Sent <CheckCircle size={18} />
+              </>
             ) : (
               <>
                 Send Message <Send size={18} />

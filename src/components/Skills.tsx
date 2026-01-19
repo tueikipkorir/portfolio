@@ -25,7 +25,7 @@ export default function Skills() {
             className="card p-8 hover:border-accent-cyan/20"
           >
             <h3 className="font-mono text-accent-cyan mb-6">
-              // {skillGroup.category.toUpperCase()}
+              {`// ${skillGroup.category.toUpperCase()}`}
             </h3>
             <ul className="space-y-1">
               {skillGroup.items.map((skill) => (

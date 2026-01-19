@@ -16,7 +16,7 @@ export default function Hero() {
         className="flex-1 text-center lg:text-left"
       >
         <p className="font-mono text-sm text-accent-cyan tracking-widest mb-6">
-          // TELECOMMUNICATIONS & AI ENGINEER
+          {`// TELECOMMUNICATIONS & AI ENGINEER`}
         </p>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8">
@@ -40,6 +40,13 @@ export default function Hero() {
           <a href="#projects" className="btn-secondary text-center">
             View my work
           </a>
+          <a
+            href="/Kevin_Kipkorir_Resume.pdf"
+            download
+            className="btn-secondary text-center"
+          >
+            Download CV
+          </a>
         </div>
       </motion.div>
 
@@ -53,16 +60,14 @@ export default function Hero() {
         <div className="relative w-64 h-64 md:w-80 md:h-80">
           {/* Gradient border */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent-cyan via-accent-purple to-accent-magenta p-1 animate-pulse-glow">
-            <div className="w-full h-full rounded-full bg-primary-light flex items-center justify-center overflow-hidden">
-              {/* Replace this div with your actual image */}
-              {/* <Image
+            <div className="w-full h-full rounded-full bg-primary-light flex items-center justify-center overflow-hidden relative">
+              <Image
                 src="/profile.jpg"
                 alt="Kevin Kipkorir"
                 fill
                 className="object-cover"
                 priority
-              /> */}
-              <span className="text-7xl">📡</span>
+              />
             </div>
           </div>
 
