@@ -44,7 +44,7 @@ export default function About() {
           >
             <p>
               I&apos;m completing my Master of Professional Engineering in
-              Telecommunications & Electronics at UTS, graduating December 2025.
+              Telecommunications & Electronics at UTS, graduating February 2026.
               My passion lies in bridging the gap between telecommunications
               infrastructure and intelligent systems.
             </p>
@@ -103,7 +103,7 @@ export default function About() {
             Telecommunications & Electronics
           </p>
           <p className="text-text-secondary">
-            Expected Graduation: December 2025
+            Expected Graduation: February 2026
           </p>
 
           <div className="flex flex-wrap gap-3 mt-8">

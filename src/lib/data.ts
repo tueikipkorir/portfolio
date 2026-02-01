@@ -113,15 +113,15 @@ export const skills = [
 
 export const experience = [
   {
-    date: "2024 - Present",
-    title: "5G Research Intern",
+    date: "Nov 2025 - Feb 2026",
+    title: "Engineering Intern",
     company: "Nokia / UTS TechLab via Optik Consultancy",
     description:
       "Leading development of AI-powered safety systems using Nokia's 5G infrastructure. Building YOLOv11 computer vision for PPE detection with 94% accuracy, integrating with Nokia RXRM edge platform and Temi autonomous robots.",
     logos: ["/Nokia.jpeg", "/Optik.jpeg"],
   },
   {
-    date: "2023 - Present",
+    date: "Mar 2025 - Present",
     title: "AI Evaluation Specialist",
     company: "Scale AI (Remote)",
     description:
@@ -129,7 +129,7 @@ export const experience = [
     logos: ["/Scale.png", "/Outlier.jpeg"],
   },
   {
-    date: "2019 - 2020",
+    date: "Aug 2017 - Oct 2017",
     title: "Network Operations Intern",
     company: "Safaricom PLC, Kenya",
     description:
@@ -137,7 +137,7 @@ export const experience = [
     logos: ["/SAF-MAIN-LOGO.jpg"],
   },
   {
-    date: "2018 - 2019",
+    date: "May 2016 - Jul 2016",
     title: "IT & Telecommunications Intern",
     company: "Kenya Power & Lighting Company",
     description:
