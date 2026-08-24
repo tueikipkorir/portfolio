@@ -1,0 +1,93 @@
+# .gitleaks.toml — canonical hygiene baseline
+#
+# Drop into the root of any Kevin Tuei project repo.
+# Used by lefthook's pre-commit gitleaks hook.
+#
+# This config inherits gitleaks' default rules and adds project-specific
+# allow-listing for known-safe patterns + extra rules for the 1Password op:// pattern.
+#
+# Reference: https://github.com/gitleaks/gitleaks
+
+[extend]
+# Inherit all gitleaks default rules (AWS, GCP, Stripe, etc.)
+useDefault = true
+
+# ─── Project-specific additional rules ─────────────────────────────────────
+
+[[rules]]
+id = "supabase-anon-key-anywhere-but-env-example"
+description = "Supabase anon keys should only appear in .env.example as placeholders"
+regex = '''eyJ[A-Za-z0-9_-]{40,}\.eyJ[A-Za-z0-9_-]{40,}\.[A-Za-z0-9_-]+'''
+# No per-rule `path` here: gitleaks' RE2 engine has no negative lookahead, so the
+# old `^(?!.*\.env\.example$).*` crashed gitleaks on config load (exit 2, every run).
+# .env.example is excluded globally by [allowlist].paths below — same effect, RE2-safe.
+tags = ["supabase", "jwt"]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key (sk-ant-...)"
+regex = '''sk-ant-[A-Za-z0-9_-]{40,}'''
+tags = ["anthropic", "api-key"]
+
+[[rules]]
+id = "openai-api-key"
+description = "OpenAI API key (sk-...)"
+regex = '''sk-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20}'''
+tags = ["openai", "api-key"]
+
+[[rules]]
+id = "vercel-token"
+description = "Vercel deploy token"
+regex = '''vercel_[A-Za-z0-9]{24,}'''
+tags = ["vercel"]
+
+[[rules]]
+id = "github-pat-fine-grained"
+description = "GitHub fine-grained PAT (github_pat_...)"
+regex = '''github_pat_[A-Za-z0-9_]{82}'''
+tags = ["github", "pat"]
+
+[[rules]]
+id = "github-pat-classic"
+description = "GitHub classic PAT (ghp_...)"
+regex = '''ghp_[A-Za-z0-9]{36,}'''
+tags = ["github", "pat"]
+
+[[rules]]
+id = "cloudflare-api-token"
+description = "Cloudflare API Token"
+regex = '''\bcf-[A-Za-z0-9_-]{40,}\b'''
+tags = ["cloudflare", "api-token"]
+
+# ─── Allow-list (false-positive suppressions) ──────────────────────────────
+
+[allowlist]
+description = "Project-wide false positives"
+
+# Allow op:// references — these are NOT secrets, they're 1Password references
+regexes = [
+    '''op://[^"\s]+''',
+    '''(?i)example\.com''',
+    '''YOUR-PROJECT-REF''',
+    '''your-anon-key-here''',
+    '''your-service-role-key-here''',
+    '''your-supabase-url-here''',
+    '''generate-a-strong-token-here''',
+    '''REPLACE_AFTER_CREATING_PROJECT''',
+    '''PLACEHOLDER-FILL-IN-KEVIN-TERMINAL''',
+]
+
+# Allow specific paths
+paths = [
+    '''^\.env\.example$''',          # Placeholder examples
+    '''^(.*/)?CHANGELOG\.md$''',     # Sometimes contains historical token references
+    '''^(.*/)?\.gitleaks\.toml$''',  # This file references patterns
+    '''^(.*/)?lefthook\.yml$''',     # Hook config may reference regex patterns
+    '''^(.*/)?templates/''',         # sibling-repo templates dir (post-install layout)
+    '''^(.*/)?infra/templates/''',   # spine canonical templates dir (post-PR #55 restructure)
+]
+
+# Specific commits to skip (fill in as needed if gitleaks needs to ignore historical commits)
+# commits = [
+#     "0123456789abcdef...",
+# ]

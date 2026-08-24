@@ -1,0 +1,140 @@
+# gitleaks.yml — canonical server-side secret-scan gate.
+#
+# Copy this VERBATIM to each project repo's .github/workflows/gitleaks.yml. This
+# is the AUTHORITATIVE server-side secret-scan gate that the spine SECURITY.md
+# §3.6 baseline assumes exists (the global baseline lives in the spine repo; a
+# sibling repo's own SECURITY.md is a stub that points back to it).
+# Until this workflow shipped (OPEN-141a, 2026-06-19) gitleaks ran in
+# EXACTLY ONE place — the local lefthook pre-commit hook — which degrades to
+# warn-only on any machine without gitleaks installed. So a commit pushed from a
+# gitleaks-less machine reached `main` with NO secret scan at all. This closes
+# that hole: same-repo PRs + every push to main are scanned server-side (where
+# they can't be skipped), and a daily scheduled run (plus an on-demand
+# workflow_dispatch) sweeps the FULL history + working tree. Fork PRs are
+# intentionally skipped (see (3) below).
+#
+# Canonical source: spine's infra/templates/.github/workflows/gitleaks.yml.
+# Fix template bugs in the CANONICAL, never the copies, then re-propagate — a
+# per-repo edit forks the byte-identity contract that makes drift detectable.
+#
+# ── DESIGN DECISIONS (load-bearing) ──────────────────────────────────────────
+#
+# (1) ALWAYS-RUN, NOT `on.paths`. Triggers on EVERY pull_request (no paths
+#     filter) so it can be promoted to a REQUIRED status check later: a
+#     `paths:`-filtered required check never reports on an unrelated PR and
+#     blocks it forever. Same rationale as ci.yml / smoke-ci.yml. Secrets can
+#     land in ANY file, so a path filter would be wrong on the merits too.
+#
+# (2) WHAT EACH EVENT ACTUALLY SCANS (verified against the gitleaks-action v3
+#     source, src/gitleaks.js — it scopes the scan via `--log-opts`, it does NOT
+#     full-history-scan on every event):
+#       • pull_request → ONLY the PR's own commits (`baseRef^..headRef`, where
+#         those refs come from the PR commits API). The incoming diff, not history.
+#       • push to main → ONLY the pushed commit RANGE (`before^..after`), or the
+#         single commit when base==head. NOT a full-history scan.
+#       • schedule (and workflow_dispatch) → no `--log-opts` is appended, so
+#         gitleaks runs its DEFAULT = a full git-history + working-tree scan.
+#         THIS is the run that gives full-history coverage and where the
+#         `.gitleaksignore` history fingerprints earn their keep — it catches
+#         anything that slipped in via a direct push.
+#     `fetch-depth: 0` is required so the base ref of the PR/push range (and the
+#     full history on the scheduled run) is actually present in the checkout.
+#     Net: incremental coverage on PR/push, full-history coverage once daily.
+#
+# (3) FORK-SAFE — fork PRs SKIPPED. The job `if:` runs only when the PR head repo
+#     == this repo (non-fork), plus `pull_request` (NOT `pull_request_target`)
+#     and a read-only token. A fork PR therefore does NOT get a server-side
+#     gitleaks scan here — an accepted coverage trade for keeping the gate
+#     trivially fork-safe (no token/secret reachable from untrusted fork code).
+#     These are single-principal PRIVATE repos with no external contributors, so
+#     the skipped population is empty in practice; revisit (drop the `if:`, which
+#     is already safe given the read-only token) if outside contributors ever
+#     open PRs and fork-PR secret coverage becomes load-bearing.
+#
+# (4) USES THE REPO'S OWN .gitleaks.toml + .gitleaksignore. GITLEAKS_CONFIG
+#     points at the committed `.gitleaks.toml` (the op:// allowlist, the
+#     Anthropic/Supabase/GitHub custom rules). `.gitleaksignore` (fingerprint
+#     allowlist of known FPs) is honoured automatically by the underlying CLI.
+#     Fix the config, not this workflow, when a real FP needs suppressing.
+#
+# (5) LICENSE KEY WIRED (org-transfer ready). gitleaks-action REQUIRES
+#     GITLEAKS_LICENSE on ORGANIZATION-owned repos, so the step env wires it
+#     from the `marameridian` org-level Actions secret GITLEAKS_LICENSE
+#     (visibility: all repos). On a PERSONAL-account repo the secret is unset,
+#     the env resolves empty, and gitleaks-action ignores it — a harmless
+#     no-op pre-transfer, load-bearing the moment the repo lands in the org.
+#
+# (6) SHA-PINNED ACTIONS. checkout + gitleaks-action pinned to a commit SHA with
+#     a `# vX.Y.Z` comment; Renovate (helpers:pinGitHubActionDigests) keeps them
+#     current within the major. GITLEAKS_VERSION pins the scanner binary too so a
+#     silent upstream gitleaks bump can't change gate behaviour without a PR.
+#
+# ── PROMOTION TO REQUIRED CHECK ──────────────────────────────────────────────
+# This workflow RUNS on every same-repo PR but is NOT yet registered as a
+# required status check on `main` — that is a branch-protection / ruleset change,
+# which is Kevin's call (same gate as smoke-ci.yml / ci.yml / OPEN-120). Register
+# the `gitleaks` check-run as required AFTER it proves green on a few PRs. The
+# check-run name to register is the bare job name: `gitleaks`. (Note: if fork
+# PRs are ever expected, the job `if:` skip means the check would never report on
+# a fork PR — keep that in mind before making it required, same as smoke-ci.)
+
+name: gitleaks
+
+on:
+  pull_request:
+    # Default types are opened/synchronize/reopened. `ready_for_review` is added
+    # so a draft PR promoted to ready WITHOUT new commits still triggers a scan —
+    # load-bearing once this is a REQUIRED check (else the gate never reports on
+    # such a PR and blocks it forever, same failure class as a paths filter).
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * *" # daily full-history sweep at 04:17 UTC
+  workflow_dispatch: # on-demand full-history + working-tree sweep (matches the schedule scan; lets a finding be re-checked without waiting for 04:17 UTC)
+
+permissions:
+  contents: read # read the repo
+  pull-requests: read # gitleaks-action reads PR commit metadata to scope the PR scan
+  # NOTE: NOT pull-requests: write — GITLEAKS_ENABLE_COMMENTS:false (below) keeps
+  # this gate from posting PR comments, so a read-only token is sufficient. The
+  # red/green check IS the signal; findings appear in the job log + step summary.
+
+concurrency:
+  # Include github.event_name so DIFFERENT event types don't share a group: on
+  # the default branch a `push` and the `schedule` run both resolve github.ref to
+  # refs/heads/main, so without the event_name a push would CANCEL an in-flight
+  # daily full-history sweep (the run that gives full-history coverage). Keeping
+  # the event in the key means a re-push still supersedes a stale push run, but a
+  # push can no longer abort the scheduled sweep.
+  group: gitleaks-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true # a re-push supersedes the stale same-event run.
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Fork-safe: skip on fork PRs (no secret reachable from untrusted code).
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0 # full history: needed for the scheduled full-history sweep + so the base ref of the PR/push range is present
+          persist-credentials: false # security hardening: gitleaks only READS files; it never needs git creds in .git/config. A secret-scan gate shouldn't leave a usable token on disk.
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          # Required since gitleaks-action v2: the action reads PR metadata via the
+          # GitHub API to scope the pull_request scan. The auto-provided token is
+          # read-only here (permissions: above) — no write scope is granted.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_VERSION: 8.30.1 # pin the scanner; bump via PR, never silently
+          GITLEAKS_ENABLE_COMMENTS: false # red/green check is the signal; no PR comment (keeps the token read-only)
+          # Required for ORG-owned repos (gitleaks-action hard-fails without a
+          # license there); sourced from the marameridian org-level Actions
+          # secret GITLEAKS_LICENSE. On a personal account the secret is unset →
+          # the env resolves empty → gitleaks-action ignores it (harmless). See (5).
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
