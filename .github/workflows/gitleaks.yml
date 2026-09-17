@@ -118,7 +118,7 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0 # full history: needed for the scheduled full-history sweep + so the base ref of the PR/push range is present
           persist-credentials: false # security hardening: gitleaks only READS files; it never needs git creds in .git/config. A secret-scan gate shouldn't leave a usable token on disk.
