@@ -83,7 +83,15 @@ paths = [
     '''^(.*/)?CHANGELOG\.md$''',     # Sometimes contains historical token references
     '''^(.*/)?\.gitleaks\.toml$''',  # This file references patterns
     '''^(.*/)?lefthook\.yml$''',     # Hook config may reference regex patterns
-    '''^(.*/)?templates/''',         # sibling-repo templates dir (post-install layout)
+    # DELETED 2026-09-18 (CB-05, backlog Lane D): '''^(.*/)?templates/''' — a
+    # WHOLE-PATH allowlist that suppressed EVERY rule under any `templates/`
+    # directory, on every repo carrying this config. It was not latent: narok-beef
+    # has a real `data/templates/` tree (8 files) and its gitleaks gate is a
+    # REQUIRED check, so a credential committed there was silent in both the
+    # lefthook hook and the server-side gate. Reproduced before deleting
+    # (synthetic `sk-ant-api03-…` fixture: FLAGGED at repo root, SILENT under
+    # `data/templates/`) and re-scanned after (all 8 files clean, nothing to
+    # suppress). R-S-010's rule stands: suppress a FINGERPRINT, never a path tree.
     '''^(.*/)?infra/templates/''',   # spine canonical templates dir (post-PR #55 restructure)
 ]
 
