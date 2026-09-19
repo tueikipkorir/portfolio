@@ -92,7 +92,18 @@ paths = [
     # (synthetic `sk-ant-api03-…` fixture: FLAGGED at repo root, SILENT under
     # `data/templates/`) and re-scanned after (all 8 files clean, nothing to
     # suppress). R-S-010's rule stands: suppress a FINGERPRINT, never a path tree.
-    '''^(.*/)?infra/templates/''',   # spine canonical templates dir (post-PR #55 restructure)
+    #
+    # DELETED 2026-09-19 (OPEN-258 residual 1, the OTHER half): '''^(.*/)?infra/templates/'''
+    # — the sibling whole-path entry the 2026-09-18 sweep left behind, on the same
+    # required gate. Residual 1 named BOTH entries; deleting one closed half the
+    # finding. Measured on spine with gitleaks 8.30.1 before deleting: WITH the
+    # entry, `gitleaks dir infra/templates` scanned ~0 bytes — the whole tree is
+    # skipped — and a planted `sk-ant-api03-…` fixture was SILENT; WITHOUT it,
+    # 124,425 B scanned and the fixture FLAGGED. The real tree is clean (124,345 B,
+    # 0 findings), so nothing was being suppressed, and NO sibling repo has ever
+    # carried an `infra/templates/` path (0 matching objects across every carrier's
+    # full history) — dead config there. R-S-010 again: a FINGERPRINT or a
+    # content-scoped [[allowlists]] entry, never a path tree.
 ]
 
 # Specific commits to skip (fill in as needed if gitleaks needs to ignore historical commits)
